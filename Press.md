@@ -15,13 +15,28 @@ Die gleiche Infrastruktur soll langfristig auch für Headless APIs, externe Syst
 ## Definitionen
 
 Moox Native Entity ist die kanonische Form.
-Sie besteht aus Model, Filament Resource, Config, Policies und Migrations.
+
+Sie besteht aus:
+
+- Model
+- Filament Resource
+- Config
+- Policies
+- Migrations
 
 Headless, Press und Sync sind optionale Capabilities dieser Entity.
 
-moox Press ist ein optionales Package. Wird es installiert, muss ein Command existieren, der den ersten (Massen)-Sync übernimmt. Wird es deinstalliert, passiert gar nichts, der Sync bleibt auf dem letzten Stand stehen. Wird es erneut installiert, muss die Sync-Gap geschlossen werden.
+moox Press ist ein optionales Package.
 
-Moox Entities sind nativ ohne Press. Sofern eine Entity als Press Projection registriert wird, wird sie mit WordPress synchronisiert.
+Wird es installiert, muss ein Command existieren, der den ersten (Massen)-Sync übernimmt.
+
+Wird es deinstalliert, passiert nichts. Der Sync bleibt auf dem letzten Stand stehen.
+
+Wird es erneut installiert, muss die entstandene Sync-Gap geschlossen werden.
+
+Moox Entities existieren vollständig ohne Press.
+
+Wird eine Entity als Press Projection registriert, wird sie zusätzlich mit WordPress synchronisiert.
 
 Media ist eine spezielle Press Projection und wird in WordPress als Attachment dargestellt.
 
@@ -53,14 +68,15 @@ Verhalten eines Feldes innerhalb einer Projection.
 
 Mögliche Field Modes:
 
-- sync
-- native_only
-- projection_only
-- readonly
-- derived
-- ignored
+- `sync`
+- `native_only`
+- `projection_only`
+- `readonly`
+- `derived`
+- `ignored`
 
 WordPress Attachments sind niemals kanonisch.
+
 Sie sind Projektionen einer kanonischen Moox Media Entity.
 
 ---
@@ -77,12 +93,14 @@ Sie sind Projektionen einer kanonischen Moox Media Entity.
 - Repair/Backfill Commands sind Pflicht.
 - APIs, Sync und externe Integrationen sollen auf einer gemeinsamen Entity-Definition basieren.
 - Keine Speziallösungen für Press, wenn dieselbe Infrastruktur auch für Headless oder Moox ↔ Moox nutzbar ist.
+- Ownership wird nicht verwendet.
+- Statt Ownership werden Origin, Projection, Mapping und Field Modes verwendet.
 
 ---
 
-## Iteration 0: Entity API Foundation
+# Iteration 0: Entity API Foundation
 
-### Ziel
+## Ziel
 
 Eine zentrale Infrastruktur schaffen, auf der künftig aufbauen:
 
@@ -96,19 +114,21 @@ Eine zentrale Infrastruktur schaffen, auf der künftig aufbauen:
 
 Die Entity wird dabei zur zentralen Definition.
 
-### Architektur evaluieren
+## Architektur evaluieren
 
 - Bestehende API-Ansätze im Projekt erfassen
 - Bestehende Sync-Ansätze (`moox/sync`) analysieren
 - Bestehende Connect-Ansätze (`moox/connect`) analysieren
 - Doppelungen und Überschneidungen identifizieren
-- Naming evaluieren:
-  - `moox/headless`
-  - `moox/sync`
-  - Erweiterung bestehender Pakete
-  - neues Infrastruktur-Paket
 
-### Entity API Definition
+Naming evaluieren:
+
+- `moox/headless`
+- `moox/sync`
+- Erweiterung bestehender Pakete
+- neues Infrastruktur-Paket
+
+## Entity API Definition
 
 Definition auf Entity-Ebene ermöglichen.
 
@@ -126,7 +146,7 @@ Beispielsweise:
 
 Konfiguration bevorzugt über bestehende Moox-Config-Strukturen.
 
-### API Standard definieren
+## API Standard definieren
 
 - Route-Konvention
 - Versionierung
@@ -148,7 +168,7 @@ Entscheidung treffen:
 - Hybrid
 - Eigener Standard
 
-### Sync Standard definieren
+## Sync Standard definieren
 
 Einheitliche Event-Struktur definieren.
 
@@ -169,17 +189,18 @@ Festlegen:
 - Locking
 - Conflict Handling
 
-### Identity & Mapping Model
+## Identity & Mapping Model
 
 - UUID Strategie definieren
 - Canonical IDs definieren
 - External IDs definieren
+- External UUIDs definieren
 - Mapping Strategie definieren
 - Projection Identity definieren
 - Locale Mapping definieren
 - Origin Tracking definieren
 
-### Driver-Konzept
+## Driver-Konzept
 
 Unterschiedliche Backends unterstützen.
 
@@ -190,7 +211,7 @@ Beispiele:
 - Remote Driver
 - Future Drivers
 
-### SDK evaluieren
+## SDK evaluieren
 
 Prüfen ob benötigt:
 
@@ -201,7 +222,7 @@ Prüfen ob benötigt:
 
 Entscheidung vertagen bis API Foundation stabil ist.
 
-### Moox Build Integration
+## Moox Build Integration
 
 Prüfen wie Build künftig automatisch generiert:
 
@@ -214,24 +235,27 @@ Prüfen wie Build künftig automatisch generiert:
 
 Neue Packages sollen standardmäßig API-ready sein.
 
-### Deliverables
+## Deliverables
 
 - Config-Erweiterung für Headless/API
 - Config-Erweiterung für Press Projection
 - Entity Registry / Entity Resolver
 - Driver Interface
-- Headless Route Generator
 - Press Projection Interface
 - Sync Event Definition
 - Identity Model
 - UUID Strategie
 - Mapping Contract
 - Beispiel-Entity für Tests
-- Tests für Config, Registry, Routes und Driver Resolution
+- Tests für Config, Registry, Driver Resolution und Event Contracts
+
+Optional:
+
+- Headless Route Generator
 
 ---
 
-## Iteration 1: Multisite Installer stabilisieren
+# Iteration 1: Multisite Installer stabilisieren
 
 - `moox:wp-install` mit Multisite sauber testen
 - Multisite als Standard für Press evaluieren
@@ -243,7 +267,7 @@ Neue Packages sollen standardmäßig API-ready sein.
 
 ---
 
-## Iteration 2: Sync Foundation
+# Iteration 2: Sync Foundation
 
 - Mapping-Tabelle definieren
 - Sync-Service-Interface definieren
@@ -260,12 +284,16 @@ Neue Packages sollen standardmäßig API-ready sein.
 - Sync-Richtung und Driver-Konzept definieren:
   - Native Driver
   - Press Driver
+- Sync Context definieren
+- Correlation IDs definieren
+- Origin Marker für Events definieren
+- Loop Prevention implementieren
 - Repair/Backfill Command anlegen:
   - `moox:press-sync --all`
   - `moox:press-sync --type=media`
   - `moox:press-sync --repair`
 
-### Mapping enthält mindestens
+## Mapping enthält mindestens
 
 - native_type
 - native_id
@@ -273,8 +301,12 @@ Neue Packages sollen standardmäßig API-ready sein.
 - external_system
 - external_type
 - external_id
+- external_uuid
 - blog_id
 - locale
+- origin
+- origin_system
+- origin_created_at
 - status
 - last_synced_at
 - last_native_hash
@@ -282,7 +314,7 @@ Neue Packages sollen standardmäßig API-ready sein.
 - error_code
 - error_message
 
-### Deliverables
+## Deliverables
 
 - Mapping Model + Migration
 - Sync Log Model + Migration
@@ -295,7 +327,7 @@ Neue Packages sollen standardmäßig API-ready sein.
 
 ---
 
-## Iteration 3: Media Sync
+# Iteration 3: Media Sync
 
 - Gemeinsame Dateiablage klären
 - WP Attachment ↔ Moox Media Mapping
@@ -307,7 +339,7 @@ Neue Packages sollen standardmäßig API-ready sein.
 - Delete/Trash/Restore Verhalten definieren
 - Moox Media UI mit Press-Datenfluss verbinden
 
-### Media Localization Strategy
+## Media Localization Strategy
 
 - File ist global/shared
 - Media Identity ist global
@@ -318,7 +350,7 @@ Neue Packages sollen standardmäßig API-ready sein.
 - Shared File Strategy definieren
 - Upload Origin Strategy definieren
 
-### Deliverables
+## Deliverables
 
 - Media Projection Model
 - Attachment Mapping
@@ -327,7 +359,7 @@ Neue Packages sollen standardmäßig API-ready sein.
 
 ---
 
-## Iteration 4: Post Types und Taxonomies
+# Iteration 4: Post Types und Taxonomies
 
 - WP Posts ↔ Moox Entities mappen
 - WP Pages ↔ Moox Entities mappen
@@ -336,11 +368,11 @@ Neue Packages sollen standardmäßig API-ready sein.
 - Term Relationships synchronisieren
 - Slug, Status, Author, Dates, Parent, Menu Order mappen
 - Meta Keys Strategie definieren
-- Gutenberg Content als Press-managed Projection Field behandeln
+- Gutenberg Content als Press Projection Field behandeln
 
 ---
 
-## Iteration 5: Users, Roles, Permissions
+# Iteration 5: Users, Roles, Permissions
 
 - WP Users ↔ Moox Users mappen
 - Roles und Capabilities mappen
@@ -350,7 +382,7 @@ Neue Packages sollen standardmäßig API-ready sein.
 
 ---
 
-## Iteration 6: Audit, Revisions, Activity
+# Iteration 6: Audit, Revisions, Activity
 
 - WP Revisions erfassen
 - Moox Audit / Spatie ActivityLog anbinden
@@ -360,7 +392,7 @@ Neue Packages sollen standardmäßig API-ready sein.
 
 ---
 
-## Iteration 7: Hardening
+# Iteration 7: Hardening
 
 - Konfliktfälle definieren
 - Fehlerstatus im Mapping speichern
@@ -377,7 +409,7 @@ Neue Packages sollen standardmäßig API-ready sein.
 
 ---
 
-## Offene Detailthemen
+# Offene Detailthemen
 
 - Atomic Lock WP ↔ Moox
 - Responsive Image Sizes
@@ -395,21 +427,14 @@ Neue Packages sollen standardmäßig API-ready sein.
 - Entity API Definition
 - Moox ↔ Moox Synchronisation
 - Connect / Sync / Headless Konsolidierung
-- Canonical ID / UUID Strategie
-- Field Mapping
-- Field Modes
 - Meta Mapping
 - Capability Mapping
 - API Auth
-- Loop Prevention
 - Sync Status UI
-- Media Localization Strategy
-- Shared Files vs Locale Files
-- Projection Identity
 
 ---
 
-## Beispiel Config für eine Entity
+# Beispiel Config für eine Entity
 
 ```php
 return [
@@ -453,7 +478,7 @@ return [
             'gutenberg_blocks' => [
                 'map' => 'post_content',
                 'mode' => 'projection_only',
-                'managed_by' => 'press',
+                'stored_in' => 'press',
             ],
 
         ],
