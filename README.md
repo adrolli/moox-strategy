@@ -9,11 +9,12 @@ This repo contains roadmaps (in German language) and specs (in English language)
 - AI Foundation
 - [Foundation](Foundation.md) - Cleanup Core, encapsulate BaseClasses, Prepare Media for translated images, Attributes vs. Custom Types and Fields, Atomic Lock (Filament Resource Lock)
   - ...
-- AI Iteration 1
+- AI Iteration
 - [Press](Press.md) - moox Headless (API), moox Sync (rewrite), moox Press (multilang, synced)
   - [Iteration 0](Press.Spec0.md)
-- AI Iteration 2
+- AI Iteration
 - [Frontend](Frontend.md) - Routing, Themes, Components ...
-- AI Iteration 3
-- Installation, Updates
-- AI Finalizing
+- AI Iteration
+- Installer, Updater
+- AI Finalizing, Chat UI (Filament Copilot but for moox inkl. Fileupload etc.)
+- [Deploy](Deploy.md) (prepare for Cloud)
